@@ -1,0 +1,212 @@
+
+/* 
+    Created on : 16 juin 2019, 18:42:55
+    Author     : paulc
+*/
+h1{
+    text-align: center;
+    margin-bottom: 10%;
+}
+#real{
+    padding-top: 40px;
+    padding-bottom: 60px;
+}
+
+.clear{
+    clear: both;
+}
+/*animation pour zoomer des textes et images pour chaque div*/
+section #section1:hover .text, section #section1:hover .photo,
+        #section2:hover .text_droite, section #section2:hover .photo_gauche,
+        #section3:hover .text, section #section3:hover .photo,
+        #section4:hover .text_droite, section #section4:hover .photo_gauche,
+        #section5:hover .text, section #section5:hover .photo
+{
+    -webkit-transform:scale(1.25); 
+    -moz-transform:scale(1.25); 
+    -ms-transform:scale(1.25); 
+    -o-transform:scale(1.25);
+    transform:scale(1.25);   
+}
+
+.photo{
+    float: left;
+    height: 300px;
+    width: 400px;
+    margin-right: 200px;
+    margin-bottom: 40px;
+    -webkit-transition: all 1s ease; /* Safari et Chrome */
+    -moz-transition: all 1s ease; /* Firefox */
+    -ms-transition: all 1s ease; /* Internet Explorer 9 */
+    -o-transition: all 1s ease; /* Opera */
+    transition: all 1s ease;
+
+}
+
+.text{
+   font-size: x-large;
+   padding-top: 80px;
+   -webkit-transition: all 1s ease; /* Safari et Chrome */
+   -moz-transition: all 1s ease; /* Firefox */
+   -ms-transition: all 1s ease; /* Internet Explorer 9 */
+   -o-transition: all 1s ease; /* Opera */
+   transition: all 1s ease;
+}
+
+.photo_gauche{
+    float: right;
+    height: 300px;
+    width: 400px;
+    margin-bottom: 40px;
+    -webkit-transition: all 1s ease; /* Safari et Chrome */
+    -moz-transition: all 1s ease; /* Firefox */
+    -ms-transition: all 1s ease; /* Internet Explorer 9 */
+    -o-transition: all 1s ease; /* Opera */
+    transition: all 1s ease;
+
+}
+
+.text_droite{
+    float: left;
+    display: inline-block;
+   font-size: x-large;
+   padding-top: 80px;
+   width: 500px;
+   -webkit-transition: all 1s ease; /* Safari et Chrome */
+   -moz-transition: all 1s ease; /* Firefox */
+   -ms-transition: all 1s ease; /* Internet Explorer 9 */
+   -o-transition: all 1s ease; /* Opera */
+   transition: all 1s ease;
+}
+
+@media screen and (max-width:768px){
+    /*animation pour zoomer des textes et images pour chaque section*/
+section #section1:hover .text, section #section1:hover .photo,
+        #section2:hover .text_droite, section #section2:hover .photo_gauche,
+        #section3:hover .text, section #section3:hover .photo,
+        #section4:hover .text_droite, section #section4:hover .photo_gauche,
+        #section5:hover .text, section #section5:hover .photo
+{
+    -webkit-transform:scale(1); 
+    -moz-transform:scale(1); 
+    -ms-transform:scale(1); 
+    -o-transform:scale(1);
+    transform:scale(1);   
+}
+
+   .text{
+   font-size: large;
+  
+   
+}
+.photo{
+    float: bottom;
+    height: 160px;
+    width: 200px;
+}
+.text{
+    float: inside;
+    padding-top: 5%;
+    
+}
+.photo_gauche{
+    height: 160px;
+    width: 200px;
+    margin-top:-15%;
+}
+.text_droite{
+    display: inline-block;
+    font-size: large;
+    width:auto;
+    margin-right: 45%;
+}
+#real{
+    width: auto;
+    margin-left: 5%;
+    margin-right: 11%;
+}
+
+}
+@media screen and (max-width:376px){
+h1 {
+    font-size: medium;
+    margin-left: 10%;
+}
+#real{
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+}
+}
+@media screen and (max-width:415px){
+h1 {
+    font-size: medium;
+    margin-left: 10%;
+}
+#real{
+    display: flex;
+    
+    flex-direction: column;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+}
+.text{
+    float: inside;
+    padding-top: 50%;
+  
+    
+}
+p{
+    margin:5%;
+}
+.photo_gauche{
+    height: 160px;
+    width: 200px;
+    margin-top:0%;
+}
+.text_droite{
+    display: inline-block;
+    font-size: large;
+    width:auto;
+    margin-right: 0%;
+    padding-top: 0px; 
+}
+.photo{
+    float: left;
+  margin-left: 25%;
+}
+
+
+.photo_gauche{
+    float: left;
+   margin-left: 25%;
+}
+footer{
+    margin-top: -7%;
+}
+h1 {
+    margin-left: 0%;
+}
+.text{
+    text-align: center;
+}
+
+.text_droite{
+   text-align: center;
+   margin-right: 5%;
+}
+}
+@media screen and (max-width:360px){
+h1 {
+    margin-left: 0%;
+}
+.text{
+    text-align: center;
+}
+
+.text_droite{
+   text-align: center;
+   margin-right: 5%;
+}
+}

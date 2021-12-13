@@ -1,0 +1,403 @@
+* {
+    font-family: 'Montserrat'; /* Police par défaut */
+    box-sizing: border-box; /* Les tailles de conteneurs incluent bordures et remplissages */
+    color: white;                        
+    margin: 0; /* Mise à 0 des marges externes */
+    padding: 0; /* Mise à 0 des marges internes */
+    text-decoration: none; /* Suppression de la mise en forme habituelle des liens 
+                           (soulignement) */
+
+}
+/* 
+    Created on : 15 juin 2019, 14:38:15
+    Author     : mathieu.bonvalet
+*/
+@font-face{ 
+    font-family: "Montserrat";
+    src: url('polices/Montserrat-Regular.ttf') format("truetype");
+}
+body {
+    display: flex; /* Ce conteneur est "flexible" */
+    justify-content: center; /* Les éléments portés sont centrés à l'horizontal */
+    flex-direction: column; /* Les éléments sont empilés */
+    align-items: center;
+    background: url('../images/fond.jpg');      
+    background-size:100%;
+    margin:0;
+    width: 100%; /* La page occupe toute la largeur */
+}
+section {
+    width: 1000px; /* Les sections occupent 1000px (taille de la bannière) */
+}
+
+body header picture img {
+    height: 500px;
+    width: 1000px;
+    margin-bottom: -150px;
+
+}
+nav ul li img{
+    height: 35px;
+    width:30px;
+    margin-top:5px;
+    margin-right: 20px;
+    padding-top: 10px;
+
+}
+nav ul {
+    display: flex; /* Ce conteneur est "flexible" */
+    flex-direction: row; /* Les éléments sont mis côte à côte */
+    justify-content: space-between; /* Les éléments sont répartis équitablement */
+    background-color: red; /* Couleur du fond */
+    margin-left: -260px;
+    margin-right: -260px;
+
+}
+
+nav ul li {
+    display: flex; /* Ce conteneur est "flexible" */
+    justify-content: center; /* Les éléments portés sont centrés à l'horizontal */
+    list-style-type: none; /* Cette liste n'a pas de puce */
+    font-size: x-large; /* Le texte est grossi en XL */
+    flex-grow: 1; /* L'espace occupé est élargie */
+}
+
+nav ul li a {
+    padding: 15px; /* Marge intérieure */
+    color: white; /* Couleur du texte */
+}
+nav ul li:hover {
+    background-color:#B40000; /* Couleur du fond au passage de la souris */
+    transition: background-color 0.34s ease-in-out;
+}
+footer{
+    background: #4C4948;
+    margin-top: 100px;
+    width: 100%;
+    height: 300px;
+    display: flex; /* Ce conteneur est "flexible" */
+    justify-content: center; /* Les éléments portés sont centrés à l'horizontal */
+    flex-direction: column; /* Les éléments sont empilés */
+    align-items: center;
+}
+#footerBas
+{
+    margin-top: -50px;
+    background: black;
+    font-size: x-large;
+    text-align: center;
+    width: 100%;
+
+}
+footer div p{
+    height: 50px;
+    margin-top: 20px;
+}
+footer img{
+    height: 300px;
+    width: 650px;
+
+
+}
+
+/* La classe sticky est ajoutée à l'en-tête avec le javascript lorsqu'elle atteint sa position de défilement */
+.sticky {
+    position: fixed;  
+    top: 0;
+    width: 70%
+}
+
+/* 
+un peu de remplissage supérieur au contenu de la page pour éviter les mouvements brusques  */
+.sticky + .content {
+    padding-top: 102px;
+}
+nav input{
+    display: none;
+}
+@media screen and (max-width:768px){
+    header div{
+        margin-right: 27%;
+    }    
+    body {
+        font-size: large;
+
+    }
+
+    header, picture {
+
+        width: auto; /* Suppression de la largeur définie */
+    }
+    nav {
+        background: red;
+        position: relative;
+        top: -20px;
+        width: 137%;
+        z-index: 1;
+        height:40px;
+    }
+
+
+    nav ul {
+        display: flex; /* Ce conteneur est "flexible" */
+        flex-direction: column; /*Les éléments sont mis côte à côte */
+        align-items: flex-start; /*Alignement sur la gauche */
+        position: absolute;
+        margin: -45px 0 0 -60px;
+        padding: 50px 0px 0px 60px;
+        background: black;
+        list-style-type: none;
+        transform: translate(-100%, 0);
+        transition: transform 0.5s ease;
+    }
+    nav ul li {
+        display: list-item;
+        padding: 10px 0;
+        width: 100%;
+    }
+
+
+    nav input {
+        display: block; /* Affichage de l'input pour pouvoir cliquez dessus */
+        position: absolute;
+        opacity: 0; /* input transparent */
+        z-index: 2; /* On le place au-dessus du bouton de menu (hamburger) */
+        margin-left: 12px;
+        margin-top: 12px;
+    }
+
+    /* Création artificielle de l'icone de menu (hamburger) */
+    nav span {
+        display: block;
+        width: 40px;
+        height: 10px;
+        margin-bottom: 5px;
+        position: relative;
+        background: white;
+        border-radius: 0px;
+        z-index: 1; /* En dessous de l'input défini avant */
+        transition: transform 0.5s ease, background 0.5s ease, opacity 0.55s ease;
+    }
+    /* Toutes les barres en blanc */
+    nav input:checked ~ span {
+        background: white;
+    }
+
+    /* On fait pivoter la première de 45° (sens horaire) */
+    nav input:checked ~ span:nth-child(2) {
+        transform: rotate(45deg) translate(8px, 10px);
+    }
+
+    /* On fait pivoter la dernière de 45° (sens anti-horaire) */
+    nav input:checked ~ span:nth-child(4) {
+        transform: rotate(-45deg) translate(11px, -12px);
+    }
+    /* On cache la barre du milieu */
+    nav input:checked ~ span:nth-child(3) {
+        opacity: 0; 
+    }
+
+    /* On annule la translation vers la gauche qui a caché le menu */
+    nav input:checked ~ ul {
+        transform: none;
+    }
+    body {
+
+        width: auto; /* La page occupe toute la largeur */
+    }
+    section {
+        width: auto; /* Les sections occupent 1000px (taille de la bannière) */
+    }
+    header{
+        width: auto;
+    }
+    .sticky {
+        margin-top: 2.2%;
+        width: 83%;
+    }
+    body header picture img {
+        height: 100%;
+        width: 100%;
+
+    }
+}
+
+@media screen and (max-width:376px){
+    nav {
+        margin-bottom: 20%;
+        top: 62px;
+
+    }
+    footer img {
+        height: 100%;
+        width: 100%;
+    }
+
+    #footerBas {
+
+        font-size: large; 
+    }
+    footer {
+        width: auto; 
+        height: auto; 
+
+    }
+}
+@media screen and (max-width: 415px){
+.sticky {
+    margin-top: -17%;
+}
+}
+@media screen and (max-width:415px){
+
+  nav {
+        margin-bottom: 20%;
+        top: 62px;
+
+    }
+    .sticky {
+        margin-top: -15%;
+    }
+
+    footer img {
+        height: 100%;
+        width: 100%;
+    }
+
+    #footerBas {
+
+        font-size: large; 
+    }
+    footer {
+        width: auto; 
+        height: auto; 
+
+    }
+
+}
+@media screen and (max-width:320px){
+
+  nav {
+        margin-bottom: 30%;
+        top: 70px;
+
+    }
+    .sticky {
+        margin-top: -18%;
+    }
+
+    footer img {
+        height: 100%;
+        width: 100%;
+    }
+
+    #footerBas {
+
+        font-size: large; 
+    }
+    footer {
+        width: auto; 
+        height: auto; 
+
+    }
+
+}
+@media screen and (max-width:360px){
+    nav {
+        margin-bottom: 30%;
+        top: 65px;
+
+    }
+   .sticky {
+        margin-top: -18%;
+    }
+    body header picture img {
+    
+    margin-bottom: -140px;
+
+}
+    
+}
+@media screen and (max-width:1024px)and (min-width:770px){
+    nav{
+        margin-left:22%;
+         margin-right:25%;
+        width: auto;
+    }
+ .sticky {        
+        width: 100%;
+    }
+    
+}
+@media screen and (max-width:376px)and (min-width:374px){
+   
+ .sticky {     
+      margin-top: -17%;
+        width: 100%;
+    }
+    
+}
+@media screen and (max-width:321px)and (min-width:319px){
+   
+ .sticky {     
+      margin-top: -21%;
+        width: 100%;
+    }
+    
+}
+@media screen and (max-width:1790px)and (min-width:1540px){
+   
+ .sticky {     
+      margin-top: 0%;
+        width: 75%;
+        margin-left: -7.5%;
+       
+        
+    }
+    
+}
+@media screen and (max-width:2000px)and (min-width:1790px){
+   
+ .sticky {     
+      margin-top: 0%;
+        width: 80%;
+        margin-left: -15%;
+       
+        
+    }
+    
+}
+@media screen and (max-width:1350px)and (min-width:1180px){
+   
+ .sticky {     
+      margin-top: 0%;
+        width: 60%;
+        margin-left: 10%;
+       
+        
+    }
+    
+}
+@media screen and (max-width:1350px)and (min-width:1270px){
+   
+ .sticky {     
+      margin-top: 0%;
+        width: 70%;
+        margin-left: 5%;
+       
+        
+    }
+    
+}
+@media screen and (max-width:1180px)and (min-width:1000px){
+   
+ .sticky {     
+      margin-top: 0%;
+        width: 60%;
+        margin-left: 15%;
+       
+        
+    }
+    
+}
+

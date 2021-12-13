@@ -1,0 +1,212 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 16 juin 2019, 18:19:21
+    Author     : mathieu.bonvalet
+*/
+
+#diapo-container{
+    position:absolute;
+    width: 100%;
+    height: 100%;
+    left:0;
+    z-index:-10;
+    border:2px solid red;
+}
+#diapo{
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transition: opacity 1s;
+}
+#diapo.fadeOut {
+    opacity: 0;
+}
+.diapo-image{
+    display:none;
+}
+
+
+#texte{
+    text-align: justify;
+
+}
+#hititre{
+    text-align: center;
+}
+h1{
+    margin-top: 50px;
+    margin-bottom: 50px;
+    font-size: xx-large;
+    font-style: oblique;
+}
+
+.rendu{
+    margin-top: 50px;
+    font-size: x-large;
+}
+
+#logo img{
+    float: right;
+    margin-right: 10px;
+    width: 256px;
+    margin-top: 15px;
+    height: 200px;
+    width: 350px;
+}
+#logo h1{
+    float: left;
+    margin-top: 100px;
+    margin-right: 70px;
+}
+span{
+    font-size: xx-large;
+    font-style: italic;
+    font-family: sans-serif;
+    color: red;
+}
+
+#logo {
+    display: flex; /* Ce conteneur est "flexible" */
+    flex-direction: row; /* Les éléments sont mis côte à côte */
+}
+#zone{
+    text-align: center;
+    font: 40px Tahoma, Helvetica, Arial, Sans-Serif;
+    
+}
+#rond{
+    width: 55%;
+    height: 55%;
+    margin-top: 30px;
+    margin-left: 22%;
+}
+@media screen and (max-width:768px){
+h1{
+   
+    font-size: x-large;
+    text-align: center;
+    
+    
+}
+#hititre{
+    text-align: center;
+    margin-left: 20%;
+}
+.rendu{
+    justify-content: center;
+    font-size: large;
+    margin-right: 5%;
+}
+#mobil{
+    margin-right: 30%;
+}
+#logo img{
+    width: 60%;
+    height: 60%;
+    
+}
+}
+@media screen and (max-width:376px){
+h1{
+   
+    font-size: large;
+    text-align: center; 
+}
+#logo img{
+    margin-left: 20%;
+}
+#diapo-container{
+    display: none;
+}
+#hititre{
+    
+    margin-left: 30%;
+}
+.rendu{
+    justify-content: center;
+    font-size: small;
+    margin-left: 17%;
+    margin-right: 17%;
+}
+#mobil{
+    margin-right: 30%;
+}
+#logo {
+    display: flex;
+    flex-direction: column;
+}
+
+}
+@media screen and (max-width:415px){
+#logo img{
+    margin-left: 20%;
+}
+#titre{
+   margin-left: 20%;
+    font-size: large;
+    text-align: center;
+}
+ #texte {
+    
+    margin-top: -80px;
+}   
+    
+#logo h1 {
+    
+     margin-top: 30px;
+}
+#diapo-container{
+    display: none;
+}
+#hititre {
+    margin-left: 42%;
+}
+.rendu{
+    justify-content: center;
+    font-size: small;
+    margin-left: 17%;
+    margin-right: 17%;
+}
+#mobil{
+    margin-right: 30%;
+}
+#logo {
+    display: flex;
+    flex-direction: column;
+}
+}
+@media screen and (max-width:320px){
+h1{
+   
+    font-size: large;
+    text-align: center;
+    
+    
+    
+}
+#diapo-container{
+    display: none;
+}
+#hititre{
+    
+    margin-left: 30%;
+}
+.rendu{
+    justify-content: center;
+    font-size: small;
+    margin-left: 17%;
+    margin-right: 17%;
+}
+#mobil{
+    margin-right: 30%;
+}
+#logo {
+    display: flex;
+    flex-direction: column;
+}
+
+}
