@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appareil Jetable</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px 20px; background: #f4f4f9; }
+        .camera-btn {
+            background: #ff4757; color: white; padding: 15px 30px; font-size: 18px;
+            border: none; border-radius: 50px; cursor: pointer; display: inline-block; transition: 0.3s;
+        }
+        .camera-btn.loading { background: #ffaa00; pointer-events: none; }
+        #cameraInput { display: none; }
+        #status { margin-top: 20px; font-size: 16px; font-weight: bold; color: #333; }
+        .success { color: #2ed573 !important; }
+    </style>
+</head>
+<body>
+
+    <h1>📸 Capturez la soirée</h1>
+    <p>La photo ira directement dans l'album des mariés !</p>
+
+    <label for="cameraInput" id="cameraLabel" class="camera-btn">
+        Prendre une photo
+    </label>
+    
+    <input type="file" accept="image/*" capture="environment" id="cameraInput">
+
+    <div id="status">En attente d'une photo...</div>
+
+    <script>
+        // REMPLACEZ CETTE URL PAR LA VÔTRE (Ne perdez pas les guillemets)
+        const GOOGLE_SCRIPT_URL = "VOTRE_URL_GOOGLE_SCRIPT_ICI";
+
+        const cameraInput = document.getElementById('cameraInput');
+        const cameraLabel = document.getElementById('cameraLabel');
+        const statusDiv = document.getElementById('status');
+
+        cameraInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            cameraLabel.classList.add("loading");
+            cameraLabel.innerText = "⏳ Traitement rapide...";
+            statusDiv.innerText = "Compression et envoi...";
+            statusDiv.classList.remove("success");
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            
+            reader.onload = function(e) {
+                // Création d'une image en mémoire pour la manipuler
+                const img = new Image();
+                img.src = e.target.result;
+                
+                img.onload = function() {
+                    // --- PARAMÈTRES DE COMPRESSION ---
+                    const MAX_WIDTH = 1600;  // Largeur maximale
+                    const MAX_HEIGHT = 1600; // Hauteur maximale
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Calcul des nouvelles dimensions en conservant le ratio
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height = Math.round((height *= MAX_WIDTH / width));
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width = Math.round((width *= MAX_HEIGHT / height));
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    // On dessine l'image redimensionnée dans un Canvas invisible
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // On exporte le résultat en JPEG avec 75% de qualité
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
+
+                    // Préparation du paquet final
+                    const payload = {
+                        filename: "photo_" + Date.now() + ".jpg",
+                        mimeType: "image/jpeg",
+                        base64: compressedBase64
+                    };
+
+                    // Envoi vers Google Drive
+                    fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.status === "error") throw new Error(data.message);
+                        cameraLabel.classList.remove("loading");
+                        cameraLabel.innerText = "Prendre une autre photo";
+                        statusDiv.innerText = "✅ Photo ajoutée à l'album !";
+                        statusDiv.classList.add("success");
+                        cameraInput.value = ""; // Réinitialiser pour la prochaine
+                    })
+                    .catch(error => {
+                        cameraLabel.classList.remove("loading");
+                        cameraLabel.innerText = "Réessayer";
+                        statusDiv.innerText = "❌ Erreur : " + error.message;
+                        console.error(error);
+                    });
+                };
+            };
+        });
+    </script>
+</body>
+</html>
