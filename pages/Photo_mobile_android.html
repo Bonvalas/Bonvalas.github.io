@@ -16,7 +16,7 @@
 
         /* Le modal de confirmation */
         #confirmationOverlay {
-            display: none;
+            display: none; /* Invisible par défaut */
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85);
             z-index: 100;
@@ -24,7 +24,7 @@
             color: white; padding: 20px; box-sizing: border-box;
         }
         #previewImage {
-            max-width: 90%; max-height: 55vh;
+            max-width: 90%; max-height: 60vh;
             border: 3px solid white; border-radius: 10px;
             margin-bottom: 20px;
         }
@@ -50,24 +50,25 @@
 
     <div id="status">En attente d'une photo...</div>
 
-    <!-- LE MODAL DE CONFIRMATION -->
+    <!-- LE NOUVEAU MODAL DE CONFIRMATION -->
     <div id="confirmationOverlay">
         <h2>Votre Photo :</h2>
         <img id="previewImage" src="" alt="Aperçu">
        
         <div class="action-btns">
-            <button id="processBtn" class="process-btn">✅ Valider et Envoyer</button>
+            <!-- Un seul bouton pour les deux actions -->
+            <button id="processBtn" class="process-btn">✅ Valider la photo</button>
             <button id="cancelBtn" class="cancel-btn">❌ Recommencer</button>
         </div>
        
         <p style="font-size: 12px; margin-top: 15px; color: #ccc;">
-            Sur iPhone : Choisissez "Enregistrer l'image" dans le menu qui va s'ouvrir.
+            (La photo sera enregistrée sur votre téléphone<br>et envoyée dans l'album des mariés)
         </p>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKXFaYzZLDJMf-Uhxa8deJ4NULojg9OeOg63eo6bs3XwnWozAANIJ7xhOsV-LBJsAF/exec"; // Gardez bien vos guillemets
+        // --- 1. CONFIGURATION OBLIGATOIRE ---
+        const GOOGLE_SCRIPT_URL = "VOTRE_URL_GOOGLE_SCRIPT_ICI"; // Collez votre URL ici
 
         const cameraInput = document.getElementById('cameraInput');
         const statusDiv = document.getElementById('status');
@@ -78,11 +79,12 @@
 
         let originalFile;
 
-        // Quand on prend la photo
+        // Quand l'utilisateur prend la photo
         cameraInput.addEventListener('change', (event) => {
             originalFile = event.target.files[0];
             if (!originalFile) return;
 
+            // Afficher l'aperçu
             const readerPreview = new FileReader();
             readerPreview.readAsDataURL(originalFile);
             readerPreview.onload = (e) => {
@@ -91,19 +93,33 @@
             }
         });
 
-        // La fonction qui gère l'envoi vers le Google Drive
-        const sendToDrive = () => {
-            processBtn.classList.add("loading");
-            processBtn.innerText = "⏳ Envoi vers l'album Drive...";
+        // Quand l'utilisateur clique sur "Valider" (Les DEUX actions s'enchaînent)
+        processBtn.addEventListener('click', () => {
            
+            // --- ACTION 1 : Téléchargement dans la galerie du téléphone ---
+            const a = document.createElement("a");
+            a.href = previewImage.src;
+            a.download = "Souvenir_" + Date.now() + ".jpg"; // Nom du fichier sur le téléphone
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            // --- Changement visuel pour faire patienter pendant l'envoi ---
+            processBtn.classList.add("loading");
+            processBtn.innerText = "⏳ Envoi vers l'album...";
+           
+            // --- ACTION 2 : Compression et Envoi sur le Drive ---
             const readerSend = new FileReader();
             readerSend.readAsDataURL(originalFile);
             readerSend.onload = function(e) {
                 const img = new Image();
                 img.src = e.target.result;
+               
                 img.onload = function() {
-                    const MAX_WIDTH = 1600; const MAX_HEIGHT = 1600;
-                    let width = img.width; let height = img.height;
+                    const MAX_WIDTH = 1600;
+                    const MAX_HEIGHT = 1600;
+                    let width = img.width;
+                    let height = img.height;
                    
                     if (width > height) {
                         if (width > MAX_WIDTH) { height = Math.round((height *= MAX_WIDTH / width)); width = MAX_WIDTH; }
@@ -128,54 +144,26 @@
                     .then(data => {
                         if(data.status === "error") throw new Error(data.message);
                         resetUI();
-                        statusDiv.innerText = "✅ Photo validée et ajoutée à l'album !";
+                        statusDiv.innerText = "✅ Photo enregistrée et envoyée !";
                         statusDiv.classList.add("success");
                     })
                     .catch(error => {
                         processBtn.classList.remove("loading");
                         processBtn.innerText = "❌ Réessayer l'envoi";
+                        statusDiv.innerText = "La photo est sur votre téléphone, mais l'envoi a échoué.";
                     });
                 };
             };
-        };
-
-        // Quand l'utilisateur clique sur "Valider"
-        processBtn.addEventListener('click', async () => {
-            // Créer un vrai fichier compatible avec le système Apple/Android
-            const file = new File([originalFile], "Souvenir.jpg", { type: originalFile.type });
-
-            try {
-                // Si le téléphone supporte le menu de partage natif (iPhone / Android récents)
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Photo Souvenir',
-                    });
-                    // Dès que l'invité a cliqué sur "Enregistrer" ou fermé le menu, on envoie au Drive
-                    sendToDrive();
-                } else {
-                    // Système classique (Vieux téléphones ou PC)
-                    const a = document.createElement("a");
-                    a.href = previewImage.src;
-                    a.download = "Souvenir_" + Date.now() + ".jpg";
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    sendToDrive();
-                }
-            } catch (error) {
-                // Si l'invité annule le menu de partage de l'iPhone, on envoie quand même sur le Drive
-                sendToDrive();
-            }
         });
 
+        // Bouton recommencer
         cancelBtn.addEventListener('click', resetUI);
 
         function resetUI() {
             overlay.style.display = 'none';
             cameraInput.value = "";
             processBtn.classList.remove("loading");
-            processBtn.innerText = "✅ Valider et Envoyer";
+            processBtn.innerText = "✅ Valider la photo";
             statusDiv.classList.remove("success");
             statusDiv.innerText = "En attente d'une photo...";
         }
