@@ -28,21 +28,19 @@
             border: 3px solid white; border-radius: 10px;
             margin-bottom: 20px;
         }
-        .action-btns { display: flex; gap: 15px; }
-        .action-btn {
-            color: white; padding: 12px 20px; font-size: 16px;
+        .action-btns { display: flex; flex-direction: column; gap: 15px; width: 80%; max-width: 300px; }
+        .process-btn {
+            background: #2ed573; color: white; padding: 15px 20px; font-size: 16px; font-weight: bold;
             border: none; border-radius: 30px; cursor: pointer; transition: 0.2s;
         }
-        .save-btn { background: #2ed573; } /* Vert */
-        .send-btn { background: #5352ed; } /* Bleu */
-        .cancel-btn { background: #ccc; color: black; margin-top: 15px; font-size: 14px; }
+        .cancel-btn { background: #ccc; color: black; padding: 12px 20px; border: none; border-radius: 30px; font-size: 14px; cursor: pointer; }
         .loading { background: #ffaa00; pointer-events: none; }
     </style>
 </head>
 <body>
 
-    <h1>📸 Capturez la soirée</h1>
-    <p>Prenez une photo, choisissez comment la garder !</p>
+    <h1>📸 L'Album de la Soirée</h1>
+    <p>Prenez une photo pour l'ajouter à l'album !</p>
 
     <label for="cameraInput" class="camera-btn">
         Prendre une photo
@@ -56,13 +54,16 @@
     <div id="confirmationOverlay">
         <h2>Votre Photo :</h2>
         <img id="previewImage" src="" alt="Aperçu">
+       
         <div class="action-btns">
-            <!-- Bouton Local -->
-            <button id="saveLocalBtn" class="action-btn save-btn">📥 Enregistrer (mon téléphone)</button>
-            <!-- Bouton Drive -->
-            <button id="sendDriveBtn" class="action-btn send-btn">☁️ Envoyer (Album Collectif)</button>
+            <!-- Un seul bouton pour les deux actions -->
+            <button id="processBtn" class="process-btn">✅ Valider la photo</button>
+            <button id="cancelBtn" class="cancel-btn">❌ Recommencer</button>
         </div>
-        <button id="cancelBtn" class="action-btn cancel-btn">Recommencer</button>
+       
+        <p style="font-size: 12px; margin-top: 15px; color: #ccc;">
+            (La photo sera enregistrée sur votre téléphone<br>et envoyée dans l'album des mariés)
+        </p>
     </div>
 
     <script>
@@ -73,48 +74,41 @@
         const statusDiv = document.getElementById('status');
         const overlay = document.getElementById('confirmationOverlay');
         const previewImage = document.getElementById('previewImage');
-        const saveLocalBtn = document.getElementById('saveLocalBtn');
-        const sendDriveBtn = document.getElementById('sendDriveBtn');
+        const processBtn = document.getElementById('processBtn');
         const cancelBtn = document.getElementById('cancelBtn');
 
-        let originalFile; // On stocke le fichier brut pour la galerie
+        let originalFile;
 
+        // Quand l'utilisateur prend la photo
         cameraInput.addEventListener('change', (event) => {
             originalFile = event.target.files[0];
             if (!originalFile) return;
 
-            // Afficher l'aperçu immédiatement
+            // Afficher l'aperçu
             const readerPreview = new FileReader();
             readerPreview.readAsDataURL(originalFile);
             readerPreview.onload = (e) => {
                 previewImage.src = e.target.result;
-                overlay.style.display = 'flex'; // Afficher le modal
-                statusDiv.innerText = "Choisissez une action.";
+                overlay.style.display = 'flex';
             }
         });
 
-        // --- ACTION 1 : Enregistrer Localement (Galerie du téléphone) ---
-        saveLocalBtn.addEventListener('click', () => {
-            // Créer un lien temporaire pour télécharger le fichier brut
+        // Quand l'utilisateur clique sur "Valider" (Les DEUX actions s'enchaînent)
+        processBtn.addEventListener('click', () => {
+           
+            // --- ACTION 1 : Téléchargement dans la galerie du téléphone ---
             const a = document.createElement("a");
             a.href = previewImage.src;
-            a.download = "photo_" + Date.now() + ".jpg"; // Nom du fichier
+            a.download = "Souvenir_" + Date.now() + ".jpg"; // Nom du fichier sur le téléphone
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+
+            // --- Changement visuel pour faire patienter pendant l'envoi ---
+            processBtn.classList.add("loading");
+            processBtn.innerText = "⏳ Envoi vers l'album...";
            
-            // Masquer le bouton de sauvegarde pour cette image
-            saveLocalBtn.innerText = "✅ Enregistré !";
-            saveLocalBtn.disabled = true;
-        });
-
-        // --- ACTION 2 : Envoyer sur le Drive ---
-        sendDriveBtn.addEventListener('click', () => {
-            sendDriveBtn.classList.add("loading");
-            sendDriveBtn.innerText = "⏳ Envoi collectif...";
-            statusDiv.innerText = "Transmission vers l'album Drive...";
-
-            // On lance la compression AVANT l'envoi
+            // --- ACTION 2 : Compression et Envoi sur le Drive ---
             const readerSend = new FileReader();
             readerSend.readAsDataURL(originalFile);
             readerSend.onload = function(e) {
@@ -122,63 +116,60 @@
                 img.src = e.target.result;
                
                 img.onload = function() {
-                    // Compression existante (75% JPEG, max 1600px)
                     const MAX_WIDTH = 1600;
                     const MAX_HEIGHT = 1600;
                     let width = img.width;
                     let height = img.height;
+                   
                     if (width > height) {
                         if (width > MAX_WIDTH) { height = Math.round((height *= MAX_WIDTH / width)); width = MAX_WIDTH; }
                     } else {
                         if (height > MAX_HEIGHT) { width = Math.round((width *= MAX_HEIGHT / height)); height = MAX_HEIGHT; }
                     }
+                   
                     const canvas = document.createElement('canvas');
                     canvas.width = width; canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
 
-                    // Payload final
                     const payload = {
                         filename: "photo_" + Date.now() + ".jpg",
                         mimeType: "image/jpeg",
                         base64: compressedBase64
                     };
 
-                    // Envoi
                     fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) })
                     .then(response => response.json())
                     .then(data => {
                         if(data.status === "error") throw new Error(data.message);
                         resetUI();
-                        statusDiv.innerText = "✅ Photo ajoutée à l'album Drive !";
+                        statusDiv.innerText = "✅ Photo enregistrée et envoyée !";
                         statusDiv.classList.add("success");
                     })
                     .catch(error => {
-                        sendDriveBtn.classList.remove("loading");
-                        sendDriveBtn.innerText = "❌ Réessayer le Drive";
-                        statusDiv.innerText = "❌ Erreur Drive : " + error.message;
+                        processBtn.classList.remove("loading");
+                        processBtn.innerText = "❌ Réessayer l'envoi";
+                        statusDiv.innerText = "La photo est sur votre téléphone, mais l'envoi a échoué.";
                     });
                 };
             };
         });
 
+        // Bouton recommencer
         cancelBtn.addEventListener('click', resetUI);
 
         function resetUI() {
             overlay.style.display = 'none';
-            cameraInput.value = ""; // Réinitialiser l'input
-            saveLocalBtn.disabled = false;
-            saveLocalBtn.innerText = "📥 Enregistrer (mon téléphone)";
-            sendDriveBtn.classList.remove("loading");
-            sendDriveBtn.innerText = "☁️ Envoyer (Album Collectif)";
+            cameraInput.value = "";
+            processBtn.classList.remove("loading");
+            processBtn.innerText = "✅ Valider la photo";
             statusDiv.classList.remove("success");
             statusDiv.innerText = "En attente d'une photo...";
         }
     </script>
 </body>
 </html>
-
 <!-- <!DOCTYPE html>
 <html lang="fr">
 <head>
