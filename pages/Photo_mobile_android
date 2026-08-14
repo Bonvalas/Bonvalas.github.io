@@ -67,7 +67,7 @@
 
     <script>
         // --- CONFIGURATION ---
-        const GOOGLE_SCRIPT_URL = "VOTRE_URL_GOOGLE_SCRIPT_ICI"; // Gardez bien vos guillemets
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKXFaYzZLDJMf-Uhxa8deJ4NULojg9OeOg63eo6bs3XwnWozAANIJ7xhOsV-LBJsAF/exec"; // Gardez bien vos guillemets
 
         const cameraInput = document.getElementById('cameraInput');
         const statusDiv = document.getElementById('status');
