@@ -66,8 +66,8 @@
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKXFaYzZLDJMf-Uhxa8deJ4NULojg9OeOg63eo6bs3XwnWozAANIJ7xhOsV-LBJsAF/exec"; // Gardez bien vos guillemets
+       // --- CONFIGURATION ---
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKXFaYzZLDJMf-Uhxa8deJ4NULojg9OeOg63eo6bs3XwnWozAANIJ7xhOsV-LBJsAF/exec"; // Remettez bien votre URL
 
         const cameraInput = document.getElementById('cameraInput');
         const statusDiv = document.getElementById('status');
@@ -91,7 +91,7 @@
             }
         });
 
-        // La fonction qui gère l'envoi vers le Google Drive
+        // La fonction qui gère l'envoi vers le Google Drive ( inchangée )
         const sendToDrive = () => {
             processBtn.classList.add("loading");
             processBtn.innerText = "⏳ Envoi vers l'album Drive...";
@@ -139,34 +139,32 @@
             };
         };
 
-        // Quand l'utilisateur clique sur "Valider"
-        processBtn.addEventListener('click', async () => {
-            // Créer un vrai fichier compatible avec le système Apple/Android
+        // LE NOUVEAU COMPORTEMENT AU CLIC (Corrigé pour iPhone)
+        processBtn.addEventListener('click', () => {
             const file = new File([originalFile], "Souvenir.jpg", { type: originalFile.type });
 
-            try {
-                // Si le téléphone supporte le menu de partage natif (iPhone / Android récents)
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Photo Souvenir',
-                    });
-                    // Dès que l'invité a cliqué sur "Enregistrer" ou fermé le menu, on envoie au Drive
-                    sendToDrive();
-                } else {
-                    // Système classique (Vieux téléphones ou PC)
-                    const a = document.createElement("a");
-                    a.href = previewImage.src;
-                    a.download = "Souvenir_" + Date.now() + ".jpg";
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    sendToDrive();
-                }
-            } catch (error) {
-                // Si l'invité annule le menu de partage de l'iPhone, on envoie quand même sur le Drive
-                sendToDrive();
+            // 1. On ouvre le menu natif Apple/Android SANS BLOQUER le reste du code
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({
+                    files: [file],
+                    title: 'Photo Souvenir',
+                }).catch(e => {
+                    // Si l'invité ferme le menu Apple, ce n'est pas grave, on ignore l'erreur
+                    console.log("Menu de sauvegarde fermé ou ignoré");
+                });
+            } else {
+                // Système de secours pour PC et très vieux téléphones
+                const a = document.createElement("a");
+                a.href = previewImage.src;
+                a.download = "Souvenir_" + Date.now() + ".jpg";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
             }
+
+            // 2. On lance l'envoi vers le Drive SIMULTANÉMENT.
+            // L'iPhone ne sera plus coupé dans son élan.
+            sendToDrive();
         });
 
         cancelBtn.addEventListener('click', resetUI);
